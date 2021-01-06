@@ -24,23 +24,27 @@ github:                             Ailrun/Haskell-Kaleidoscope
 
 # flags:
 
-library:
-  ## Common fields
-  source-dirs:
-    - src
-  dependencies:
-    - base
-    - containers
-    - megaparsec
-    - text
-  ## Library fields
-  # exposed:
-  # exposed-modules:
-  # generated-exposed-modules:
-  # other-modules:
-  # generated-other-modules:
-  # reexported-modules:
-  # signatures:
+# library:
+#   ## Common fields
+#   source-dirs:
+#     - src
+#   ghc-options:                      -Wall
+#   dependencies:
+#     - base
+#     - bytestring
+#     - containers
+#     - llvm-hs
+#     - llvm-hs-pure
+#     - megaparsec
+#     - text
+#   ## Library fields
+#   # exposed:
+#   # exposed-modules:
+#   # generated-exposed-modules:
+#   # other-modules:
+#   # generated-other-modules:
+#   # reexported-modules:
+#   # signatures:
 
 # internal-libraries:
 
@@ -49,11 +53,17 @@ executables:
     ## Common fields
     source-dirs:
       - app
-    ghc-options:                    -threaded -rtsopts -with-rtsopts=-N
+      - src
+    ghc-options:                    -Wall -threaded -rtsopts -with-rtsopts=-N
     dependencies:
-      - Haskell-Kaleidoscope
+      # - Haskell-Kaleidoscope
 
       - base
+      - bytestring
+      - containers
+      - llvm-hs
+      - llvm-hs-pure
+      - megaparsec
       - text
     ## Executable fields
     main:                           Main.hs

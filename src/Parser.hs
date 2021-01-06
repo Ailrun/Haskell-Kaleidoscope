@@ -1,13 +1,15 @@
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ViewPatterns      #-}
-module Parser where
+module Parser
+  ( module Parser
 
-import           Control.Monad
+  , Identifier
+  ) where
+
 import           Data.Bifunctor
 import qualified Data.Set as S
 import           Data.Text.Lazy (Text)
-import qualified Data.Text.Lazy as T
 import           Data.Void
 import           Lexer
 import           Text.Megaparsec hiding (Token, Tokens)
@@ -44,17 +46,17 @@ data Operator
   deriving ( Show
            )
 
-mainLoop :: Text -> [Text]
-mainLoop = ("ready> " :) . go . lexer
+parser :: Text -> [Either String Top]
+parser = go . lexer
   where
-    go ts = T.pack (show r) <> "\n" : "ready> " : go' ts'
+    go ts = r : go' ts'
       where
         go' = \case
-          TokEof:_        -> ["\n"]
-          ts              ->
+          TokEof:_        -> []
+          ts''            ->
             case r of
-              Left _ -> go (drop 1 ts)
-              _      -> go ts
+              Left _ -> go (drop 1 ts'')
+              _      -> go ts''
         (stateInput -> ts', first errorBundlePretty -> r) = runParser' parseTop initialState
 
         initialState = State
@@ -70,8 +72,8 @@ mainLoop = ("ready> " :) . go . lexer
           , stateParseErrors = []
           }
 
-parser :: Text -> Either (ParseErrorBundle [Token] Void) Top
-parser = parse parseTop "<kaleidoscope>" . lexer
+-- parser :: Text -> Either (ParseErrorBundle [Token] Void) Top
+-- parser = parse parseTop "<kaleidoscope>" . lexer
 
 parseTop :: Parsec Void [Token] Top
 parseTop
@@ -116,9 +118,6 @@ parsePrimary = parseIdentifier <|> parseDouble <|> parseParen
 
 parseDouble :: Parsec Void [Token] Expr
 parseDouble = ExprDouble <$> token fromTokDouble S.empty
-  where
-    fromTokDouble (TokDouble d) = Just d
-    fromTokDouble _             = Nothing
 
 parseParen :: Parsec Void [Token] Expr
 parseParen = inParen parseExpr
