@@ -22,7 +22,6 @@ import           Parser
 codeGen :: [Top] -> IO Text
 codeGen ts = withContext $ \c -> do
   m <- buildModuleT "my cool jit" $ foldM genTop Map.empty ts
-  print (AST.moduleDefinitions m)
   withModuleFromAST c m (fmap (T.decodeUtf8 . B.fromStrict) . moduleLLVMAssembly)
 
 genTop :: (MonadFail m, MonadModuleBuilder m)
